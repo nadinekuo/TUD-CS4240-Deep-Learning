@@ -210,15 +210,17 @@ def forward(self, x):
 ```
 
 
-## 2.2 Optmization Algorithms
+## 2.2 Optimization Algorithms
 
 - **Stochastic Gradient Descent (SGD)** tends to be noisy! We need a memory-efficient way of computing gradients based on past statistics (averaging leads to smoother trajectories)!
 
-- **EWMA**
+- **EWMA: Exponentially Weighted Moving Average**: due to recursion, we only need to store $2n$ values given $n$ derivative values - one for each previous value.
+    - $S_t = \rho S_{t-1} + (1 - \rho) y_t$ 
 
-- 
-
-- 
+Some Gradient Descent Update algorithms that make use of EWMA:
+- **Momentum**: on average in good direction - uses average to update gradient directly
+- **RMSProp**: high variance in wrong direction - uses average to scale learning rate of update such that we take larger steps towards beginning
+- **Adam**: combines **Momentum** and **RMSProp**
 
 
 ## 3.1 Regularization
