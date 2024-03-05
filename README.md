@@ -225,6 +225,30 @@ Some Gradient Descent Update algorithms that make use of EWMA:
 
 ## 3.1 Regularization
 
+**Overfitting** occurs when there is a big gap between *true error* and *apparent error* - likely caused by a small training set hindering generalization of the model
+
+Ways to beat overfitting:
+- Data augmentation 
+- Reduce the no. of features
+- Reduce complexity/flexibility of the model
+
+This is where **regularization** comes in: it discourages overly complex models!
+
+- "Regularization are techniques to reduce the test error, possibly at the expense of increased training error"
+- **Weight decay** discourages large weights
+- **Ridge (L2)**: shrinks coefficients of less significant features towards 0
+- **Lasso (L1)**: reduce weights to exactly 0 (induces 
+sparsity), performs feature selection during training NN
+- Early stopping is useful when network is correctly initialized
+    - Starting with small weights is good
+    - This ensures norm of `w` is not too large
+    - Better generalization to future data
+- **Noise robustness**
+    - Noise added to input - data augmentation
+    - Noise added to weights - encourages stability of model
+    - Noise added to output - label smoothing 
+- **Dropout** = combination of weight decay and noise injection
+    - Each training step: randomly select a fraction of the nodes and make then inactive (set to 0) 
 
 ## 3.2 RNNs
 
