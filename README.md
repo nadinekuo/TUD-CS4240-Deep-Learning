@@ -235,8 +235,7 @@ Ways to beat overfitting:
 This is where **regularization** comes in: it discourages overly complex models!
 
 - *"Regularization are techniques to reduce the test error, possibly at the expense of increased training error"*
-- **Weight decay** discourages large weights
-- **Ridge (L2)**: shrinks coefficients of less significant features towards 0
+- **Ridge (L2) = weight decay**: shrinks coefficients of less significant features towards 0
 - **Lasso (L1)**: reduce weights to exactly 0 (induces 
 sparsity), performs feature selection during training NN
 - **Early stopping** of gradient updates is useful when network is correctly initialized 
