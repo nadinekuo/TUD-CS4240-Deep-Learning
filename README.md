@@ -225,7 +225,8 @@ Some Gradient Descent Update algorithms that make use of EWMA:
 
 ## 3.1 Regularization
 
-**Overfitting** occurs when there is a big gap between *true error* and *apparent error* - likely caused by a small training set hindering generalization of the model
+**Overfitting** occurs when there is a big gap between *true error* and *apparent error* - likely caused by a small training set hindering generalization of the model.
+**Learning curve** plots training set size against accuracy.
 
 Ways to beat overfitting:
 - Data augmentation 
@@ -236,19 +237,64 @@ This is where **regularization** comes in: it discourages overly complex models!
 
 - *"Regularization are techniques to reduce the test error, possibly at the expense of increased training error"*
 - **Ridge (L2) = weight decay**: shrinks coefficients of less significant features towards 0
+
+$$\mathcal{L} = \mathcal{L}_0 + \frac{\lambda}{2}\sum_w w^2 $$
+
+In the training loop, we can update the original loss e.g. *CrossEntropyLoss*:
+```python
+l2 = 0
+for p in net.parameters():        # Loop through the network parameters
+    l2 += torch.pow(p, 2).sum() 
+loss = loss + 0.5 * wd * l2
+```
+Instead, we can also directly use the PyTorch weight decay parameter when instantiating optimizer:
+
+```python
+optimizer = optim.SGD(net.parameters(), lr=5e-1, weight_decay=3e-3)
+```
+
+
 - **Lasso (L1)**: reduce weights to exactly 0 (induces 
 sparsity), performs feature selection during training NN
-- **Early stopping** of gradient updates is useful when network is correctly initialized 
-    - i.e. we stop training when discrepancy between validation and apparent error starts to increase: decreasing error on train set may make it seem like model is learning still, whereas validation set (unseen) error increasing...
-    - This ensures norm of `w` is not too large (starting with small weights is good)
-    - Better generalization to future data
-- **Noise robustness**
-    - Noise added to input - data augmentation
-    - Noise added to weights - encourages stability of model
-    - Noise added to output - label smoothing 
-- **Dropout** = combination of weight decay and noise injection
-    - Each training step: randomly select a fraction of the nodes and make then inactive (set to 0) 
-    - Prevents NN to become overly reliant on specific neurons
+
+### Early Stopping (of Gradient Updating)
+
+- Useful when network is correctly initialized 
+- We stop training when discrepancy between validation and apparent error starts to increase: decreasing error on train set may make it seem like model is learning still, whereas validation set (unseen) error increasing...
+    - e.g. use **patience** as stopping criteria 
+- This ensures norm of `w` is not too large (starting with small weights is good)
+- Better generalization to future data
+
+```python
+if val_acc > val_acc_best:
+    val_acc_best = val_acc
+    patience_cnt = 0
+else:
+    patience_cnt += 1
+    if patience_cnt == patience:
+        break
+```
+
+### Noise Robustness
+- Noise added to input - data augmentation
+- Noise added to weights - encourages stability of model
+- Noise added to output - label smoothing 
+
+### Dropout
+= combination of weight decay and noise injection
+
+- Note that this modifies the *architecture*, rather than a simple modification to the optimization step.
+- Each training step: randomly select a fraction of the nodes and make then inactive (set to 0) 
+- Prevents NN to become overly reliant on specific neurons
+
+In `forward(x)` we can apply dropout: 
+```python
+h = F.relu(self.fc1(x))  
+h = self.do1(h + F.relu(self.fc2(h)))
+h = h + F.relu(self.fc3(h))
+h = self.do2(h + F.relu(self.fc4(h)))
+h = h + F.relu(self.fc5(h))
+```
 
 ## 3.2 RNNs
 
