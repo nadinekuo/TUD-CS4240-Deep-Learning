@@ -298,11 +298,48 @@ h = h + F.relu(self.fc5(h))
 
 ## 3.2 RNNs
 
+- **Recurrent Neural Networks** can deal with inputs of varying lengths
+- Weights are shared across the hidden states
+- The no. of parameters does not grow with sequence length!
+- A token $X_t$ (part of input sequence) must have the same dimension every iteration!
+
 ## Vanilla RNN (Elman)
 
-## GRU
+```python
+self.weight_xh = nn.Parameter(torch.Tensor(input_size, hidden_size))
+self.weight_hh = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
+self.bias_xh = nn.Parameter(torch.Tensor(hidden_size))
+self.bias_hh = nn.Parameter(torch.Tensor(hidden_size))
+```
+
+To deal with vanishing/exploding gradients, the **GRU** and **LSTM** were invented, which introduce additional gates.
+
+## Gated Recurrent Unit (GRU)
+
+- **Reset gate**: possibly ignore previous hidden states $H_{t-1}$
+- **Update gate**: weigh between previous hidden state $H_{t-1}$ and current candidate state $\hat{H}_{t-1}$
+
+```python
+# Below we concatenate the weight matrices W_xn, W_xr, W_xz
+self.weight_xh = nn.Parameter(torch.Tensor(input_size, 3 * hidden_size)) 
+self.weight_hh = nn.Parameter(torch.Tensor(hidden_size, 3 * hidden_size))
+self.bias_xh = nn.Parameter(torch.Tensor(3 * hidden_size))
+self.bias_hh = nn.Parameter(torch.Tensor(3 * hidden_size))
+```
 
 ## LSTM
+
+- Linearly adds/removes information to 'memory cell'/'conveyor belt' $C_t$
+- **Input- and forget gates**: similar to single update gate in GRU
+- **Output gate**: to compute the current hidden state
+
+```python
+self.weight_xh = nn.Parameter(torch.Tensor(input_size, 4 * hidden_size))
+self.weight_hh = nn.Parameter(torch.Tensor(hidden_size, 4 * hidden_size))
+self.bias_xh = nn.Parameter(torch.Tensor(4 * hidden_size))
+self.bias_hh = nn.Parameter(torch.Tensor(4 * hidden_size))
+```
+
 
 
 ## 4.1 Self-Attention
