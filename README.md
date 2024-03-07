@@ -298,6 +298,12 @@ h = h + F.relu(self.fc5(h))
 
 ## 3.2 RNNs
 
+## Vanilla RNN (Elman)
+
+## GRU
+
+## LSTM
+
 
 ## 4.1 Self-Attention
 
