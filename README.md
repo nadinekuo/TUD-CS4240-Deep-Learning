@@ -343,11 +343,74 @@ self.bias_hh = nn.Parameter(torch.Tensor(4 * hidden_size))
 
 ## 4.1 Self-Attention / Transformers
 
+- Whereas RNNs are not parallelizable by nature, Transformers are making inference way more efficient
 - Similarly as with RNNs, the no. of params does not grow as the sequence length increases!
+- Trainable params for Query, Key and Value vectors: $W_q, W_k, W_v$
 
+Self-attention layer with single head:
 
+```python
+class SelfAttention(nn.Module):
+    def __init__(self, k):
+    super(SelfAttention, self).__init__()
 
+    # These layers compute the queries, keys and values
+    self.tokeys    = nn.Linear(k, k, bias=False)
+    self.toqueries = nn.Linear(k, k, bias=False)
+    self.tovalues  = nn.Linear(k, k, bias=False)
 
+    ...
+```
+
+Wide multi-head self-attention: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions:
+
+```python
+class MultiHeadAttention(nn.Module):
+     def __init__(self, k, heads=8):
+        super(MultiHeadAttention, self).__init__()
+
+        self.heads = heads
+
+        # These linear layers compute the queries, keys and values for all heads (as a single concatenated vector)
+        self.tokeys    = nn.Linear(k, k * heads, bias=False)
+        self.toqueries = nn.Linear(k, k * heads, bias=False)
+        self.tovalues  = nn.Linear(k, k * heads, bias=False)
+
+        # This unifies the outputs of the different heads into a single k-vector
+        self.unifyheads = nn.Linear(k * heads, k)
+        
+        ...
+```
+
+Example of simple Transformer block:
+
+```python
+class TransformerBlock(nn.Module):
+    def __init__(self, k, heads):
+        """
+        Basic transformer block.
+
+        Args:
+            k: embedding dimension
+            heads: number of heads (k mod heads must be 0)
+        """
+        super(TransformerBlock, self).__init__()
+
+        self.att = MultiHeadAttention(k, heads=heads)
+
+        self.norm1 = nn.LayerNorm(k)
+
+        self.ff = nn.Sequential(
+            nn.Linear(k, 4 * k),
+            nn.ReLU(),
+            nn.Linear(4 * k, k))
+
+        self.norm2 = nn.LayerNorm(k)
+
+        ...
+```
+
+Finally, we typically also apply positional encoding to the Transformer architecture, to encode position to the input vectors i.e. avoiding permutation invariance.
 
 
 ## 4.2 Unsupervised Learning
