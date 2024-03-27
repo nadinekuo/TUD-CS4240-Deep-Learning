@@ -343,9 +343,16 @@ self.bias_hh = nn.Parameter(torch.Tensor(4 * hidden_size))
 
 ## 4.1 Self-Attention / Transformers
 
-- Whereas RNNs are not parallelizable by nature, Transformers are making inference way more efficient
+Checkout https://peterbloem.nl/blog/transformers for details explanations and illustrations!
+In this post, Transformers are defined as:
+
+> Any architecture designed to process a connected set of units—such as the tokens in a sequence or the pixels in an image—where the only interaction between units is through self-attention.
+
+- Whereas RNNs are not parallelizable by nature, Transformers are - making training much faster!
 - Similarly as with RNNs, the no. of params does not grow as the sequence length increases!
-- Trainable params for Query, Key and Value vectors: $W_q, W_k, W_v$
+- Trainable $k$ x $k$ weight matrices for Query, Key and Value vectors: $W_q, W_k, W_v$
+    - Shared across layers, like with CNNs and RNNs
+    - The "sliding window" in self-attention can be seen as sort of convolution, but Transformers are much better at capturing long-range dependencies
 
 Self-attention layer with single head:
 
@@ -362,7 +369,7 @@ class SelfAttention(nn.Module):
     ...
 ```
 
-Wide multi-head self-attention: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions:
+Wide multi-head self-attention: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions. NOTE this does not lead to increase in params!
 
 ```python
 class MultiHeadAttention(nn.Module):
@@ -371,14 +378,14 @@ class MultiHeadAttention(nn.Module):
 
         self.heads = heads
 
-        # These linear layers compute the queries, keys and values for all heads (as a single concatenated vector)
+        # These projections compute the queries, keys and values for all heads (as a single concatenated vector)
         self.tokeys    = nn.Linear(k, k * heads, bias=False)
         self.toqueries = nn.Linear(k, k * heads, bias=False)
         self.tovalues  = nn.Linear(k, k * heads, bias=False)
 
         # This unifies the outputs of the different heads into a single k-vector
         self.unifyheads = nn.Linear(k * heads, k)
-        
+
         ...
 ```
 
@@ -410,7 +417,9 @@ class TransformerBlock(nn.Module):
         ...
 ```
 
-Finally, we typically also apply positional encoding to the Transformer architecture, to encode position to the input vectors i.e. avoiding permutation invariance.
+Finally, we typically also apply **positional encoding** to the Transformer architecture, to encode position to the input vectors i.e. avoiding permutation invariance.
+
+Also note that in autoregressive tasks, we prevent Transformers by attending forward in the sequence by applying a mask.
 
 
 ## 4.2 Unsupervised Learning
