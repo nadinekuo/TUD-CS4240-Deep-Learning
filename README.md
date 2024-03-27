@@ -316,8 +316,8 @@ To deal with vanishing/exploding gradients, the **GRU** and **LSTM** were invent
 
 ## Gated Recurrent Unit (GRU)
 
-- **Reset gate**: possibly ignore previous hidden states $H_{t-1}$
-- **Update gate**: weigh between previous hidden state $H_{t-1}$ and current candidate state $\hat{H}_{t-1}$
+- **Reset gate $R$**: possibly ignore previous hidden states $H_{t-1}$
+- **Update gate $Z$**: weigh between previous hidden state $H_{t-1}$ and current candidate state $\hat{H}_{t-1}$
 
 ```python
 # Below we concatenate the weight matrices W_xn, W_xr, W_xz
@@ -330,8 +330,8 @@ self.bias_hh = nn.Parameter(torch.Tensor(3 * hidden_size))
 ## LSTM
 
 - Linearly adds/removes information to 'memory cell'/'conveyor belt' $C_t$
-- **Input- and forget gates**: similar to single update gate in GRU
-- **Output gate**: to compute the current hidden state
+- **Input- $I$ and forget $F$ gates**: similar to single update gate in GRU
+- **Output gate $O$**: to compute the current hidden state
 
 ```python
 self.weight_xh = nn.Parameter(torch.Tensor(input_size, 4 * hidden_size))
@@ -341,8 +341,16 @@ self.bias_hh = nn.Parameter(torch.Tensor(4 * hidden_size))
 ```
 
 
+## 4.1 Self-Attention / Transformers
 
-## 4.1 Self-Attention
+- Similarly as with RNNs, the no. of params does not grow as the sequence length increases!
 
 
-## 4.2 Unsupervised
+
+
+
+
+## 4.2 Unsupervised Learning
+
+### Variational Autoencoders
+
