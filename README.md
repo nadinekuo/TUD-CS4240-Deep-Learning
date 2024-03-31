@@ -433,13 +433,54 @@ Whereas supervised models learn the basis of examples, unsupervised learners mos
 
 Concatenation of two parts: $y = g(h(x))$
 - **Encoder $h(x)$**: downscale data to *latent space* i.e. dimensionality reduction
+    - Note that the latent dimension is a hyperparam 
 - **Decoder $g(x)$**: decodes the lower-dimensional representation back to original size 
     - Used for generating new data: $x_{new} = h(z_{sample})$ 
 
 Using $L(x, y)$ (i.e. MSE) we can learn how to encode the input signals and decode it back.
 
-### Variational Auto-encoders
+```python
+class Encoder(nn.Module):
+    def __init__(self, latent_dims, s_img, hdim):
+        super(Encoder, self).__init__()
+        self.linear1 = nn.Linear(s_img*s_img, hdim[0])
+        self.linear2 = nn.Linear(hdim[0], hdim[1])
+        self.linear3 = nn.Linear(hdim[1], latent_dims)
+        self.relu    = nn.ReLU()
+```
 
-- ...
-- ...
-- ...
+```python
+class Decoder(nn.Module):
+    def __init__(self, latent_dims, s_img, hdim):
+        super(Decoder, self).__init__()
+
+        self.linear1 = nn.Linear(latent_dims, hdim[1])
+        self.linear2 = nn.Linear(hdim[1], hdim[0])
+        self.linear3 = nn.Linear(hdim[0], s_img*s_img)
+        self.relu    = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+```
+
+```python
+class Autoencoder(nn.Module):
+    def __init__(self, latent_dims, s_img, hdim = [100, 50]):
+        super(Autoencoder, self).__init__()
+
+        self.encoder = Encoder(latent_dims, s_img, hdim)
+        self.decoder = Decoder(latent_dims, s_img, hdim)
+```
+
+Note it is tricky to generate samples here, due to the undefined range! 
+
+### Variational Auto-encoders (VAEs)
+
+- **Encoder**: generates *distributions*, instead of points!
+- **Decoder**: chooses $z$ randomly from the learned distribution
+    - Or: *reparameterization trick* which ensures backpropagation is possible
+
+This yields a latent space that is:
+- *Continuous*: two points close in latent space yield similar reproductions
+- *Complete*: all points in the latent space, at least close enough to the origin, yield meaningful reproductions
+
+By adding a regularization term to the loss, we try to make the network learn a normal distribution close to $N(0, 1)$.
+
