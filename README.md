@@ -541,7 +541,9 @@ f_{L} &= \underbrace{L (x, h(z))}_{\text{reproduction term}} + \underbrace{R \le
 \end{aligned}
 $$
 
-- We add a KL loss term to the MSE loss: $L = L_{MSE} + L_{KL}$ to measure the loss between $N(0,I)$ and learned distribution where $L_{KL} = \sum{\sigma^2 + \mu^2 - log(\sigma) - 1/2}$
+- We add a KL loss (regularization) term to the MSE loss: $L = L_{MSE} + L_{KL}$ to measure the loss between $N(0,I)$ and learned distribution where $L_{KL} = \sum{\sigma^2 + \mu^2 - log(\sigma) - 1/2}$
+
+See the full derivation here: https://stats.stackexchange.com/questions/318748/deriving-the-kl-divergence-loss-for-vaes/370048#370048.
 
 ```python
     def kull_leib(self, mu, sigma):
