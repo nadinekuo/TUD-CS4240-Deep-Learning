@@ -476,11 +476,74 @@ Note it is tricky to generate samples here, due to the undefined range!
 
 - **Encoder**: generates *distributions*, instead of points!
 - **Decoder**: chooses $z$ randomly from the learned distribution
-    - Or: *reparameterization trick* which ensures backpropagation is possible
+    - Or: *reparameterization trick*:
+
+$$
+z = \mu_x +  \sigma_x \zeta= g_1(x) + g_2 (x) \zeta
+$$
+
+in which $\zeta$ is randomly sampled from $\mathcal{N} (0, I)$.  Backpropagation is perfectly possible again!
 
 This yields a latent space that is:
 - *Continuous*: two points close in latent space yield similar reproductions
 - *Complete*: all points in the latent space, at least close enough to the origin, yield meaningful reproductions
 
-By adding a regularization term to the loss, we try to make the network learn a normal distribution close to $N(0, 1)$.
+NOTE: we only need to create a new encoder now, but the decoder remains identical:
 
+```python
+class VarEncoder(nn.Module):
+    def __init__(self, latent_dims, s_img, hdim):
+        super(VarEncoder, self).__init__()
+
+        #layers for g1: learns mean
+        self.linear1_1 = nn.Linear(s_img*s_img, hdim[0])
+        self.linear2_1 = nn.Linear(hdim[0], hdim[1])
+        self.linear3_1 = nn.Linear(hdim[1], latent_dims)
+
+        #layers for g2: learns variance
+        self.linear1_2 = nn.Linear(s_img*s_img, hdim[0])
+        self.linear2_2 = nn.Linear(hdim[0], hdim[1])
+        self.linear3_2 = nn.Linear(hdim[1], latent_dims)
+
+        self.relu    = nn.ReLU()
+
+        # distribution setup
+        self.N = torch.distributions.Normal(0, 1)
+        self.N.loc = self.N.loc.to(try_gpu()) # hack to get sampling on the GPU
+        self.N.scale = self.N.scale.to(try_gpu())
+        self.kl = 0
+```
+
+```python
+class VarAutoencoder(nn.Module):
+    def __init__(self, latent_dims, s_img, hdim = [100, 50]):
+        super(VarAutoencoder, self).__init__()
+
+        self.encoder = VarEncoder(latent_dims, s_img, hdim)
+        self.decoder = Decoder(latent_dims, s_img, hdim)
+
+    def forward(self, x):
+
+        z = self.encoder(x)
+        y = self.decoder(z)
+
+        return y
+```
+
+We make some modifications to the loss function:
+
+- By adding a regularization term to the loss, we try to make the network learn a normal distribution close to $N(0, 1)$.
+
+$$
+\begin{aligned}
+f_{L} &= \underbrace{L (x, h(z))}_{\text{reproduction term}} + \underbrace{R \left(\mathcal{N} (\mu_x, \sigma_x), \mathcal{N} (0, I) \right)}_{\text{regularization term}} \\
+&= L (x, h(z)) + R \left(\mathcal{N} (g_2 (x), g_1(x)), \mathcal{N} (0, I) \right)
+\end{aligned}
+$$
+
+- We add a KL loss term to the MSE loss: $L = L_{MSE} + L_{KL}$ to measure the loss between $N(0,I)$ and learned distribution where $L_{KL} = \sum{\sigma^2 + \mu^2 - log(\sigma) - 1/2}$
+
+```python
+    def kull_leib(self, mu, sigma):
+        return torch.sum(sigma**2 + mu**2 - torch.log(sigma) - 1/2)
+```
