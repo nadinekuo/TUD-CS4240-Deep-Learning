@@ -424,5 +424,22 @@ Also note that in autoregressive tasks, we prevent Transformers by attending for
 
 ## 4.2 Unsupervised Learning
 
-### Variational Autoencoders
+Whereas supervised models learn the basis of examples, unsupervised learners mostly try to find meaning or structure within the data.
 
+- Trained on non-labelled data (i.e. no targets), so tasks such as classification or regression become difficult
+- Instead, unsupervised learners can be deployed as models that learn data-specific features, store large datasets efficiently or generate new realistic samples
+
+### The Auto-encoder
+
+Concatenation of two parts: $y = g(h(x))$
+- **Encoder $h(x)$**: downscale data to *latent space* i.e. dimensionality reduction
+- **Decoder $g(x)$**: decodes the lower-dimensional representation back to original size 
+    - Used for generating new data: $x_{new} = h(z_{sample})$ 
+
+Using $L(x, y)$ (i.e. MSE) we can learn how to encode the input signals and decode it back.
+
+### Variational Auto-encoders
+
+- ...
+- ...
+- ...
