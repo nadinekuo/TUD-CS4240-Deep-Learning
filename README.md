@@ -121,7 +121,7 @@ def optimizer_step(self, lr):
 
 ### `class Conv2d(in_channels, out_channels, kernel_size, stride, padding)`
 
-__PyTorch version: `nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)`__
+_PyTorch version: `nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)`_
 
 ```python
     def init_params(self, std=0.7071):
@@ -166,7 +166,7 @@ __PyTorch version: `nn.Conv2d(in_channels, out_channels, kernel_size, stride, pa
 
 ### `class MaxPool2d(kernel_size, stride, padding)`
 
-__PyTorch version: `nn.MaxPool2d(kernel_size, stride, padding)`__
+_PyTorch version: `nn.MaxPool2d(kernel_size, stride, padding)`_
 
 ```python
  def forward(self, x):
@@ -200,7 +200,7 @@ __PyTorch version: `nn.MaxPool2d(kernel_size, stride, padding)`__
 
 ### `class CNN(in_channels, hidden_channels, out_features)`
 
-__PyTorch version: `nn.TorchCNN(in_channels, hidden_channels, out_features)`__
+_PyTorch version: `nn.TorchCNN(in_channels, hidden_channels, out_features)`_
 
 ```python
 def forward(self, x):
