@@ -233,7 +233,7 @@ Ways to beat overfitting:
 - Reduce the no. of features
 - Reduce complexity/flexibility of the model
 
-This is where **regularization** comes in: it discourages overly complex models!
+This is where **regularization** comes in: it discourages overly complex models (last 2 bullet points)!
 
 - *"Regularization are techniques to reduce the test error, possibly at the expense of increased training error"*
 - **Ridge (L2) = weight decay**: shrinks coefficients of less significant features towards 0
@@ -295,6 +295,9 @@ h = h + F.relu(self.fc3(h))
 h = self.do2(h + F.relu(self.fc4(h)))
 h = h + F.relu(self.fc5(h))
 ```
+
+Note that during evaluation, we do not drop neurons but rescale weights: $w_{new} = w_{original} * p_{dropout}$
+
 
 ## 3.2 RNNs
 
