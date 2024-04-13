@@ -225,18 +225,38 @@ Some Gradient Descent Update algorithms that make use of EWMA:
 
 ## 3.1 Regularization
 
+### Learning Curves
+
+- The more training data, the better you approcimate the true data distribution i.e. the closer to the asymptotic error you get
+    - The more complex the model, the lower asymptotic error rate you can achieve - but only if you have sufficient training data!
+    - For Bayes error (= irreducable error), you need inf no. of samples in order to see any learning.
+    - Note: the curve can never be lower than Bayes error
+- **"Appropriate" no. of training samples** = not perfect error rate, but at least similar to what you would expect on validation set
+- **Underfitting** = potential to improve, but we don't see it directly in the learning curve until we tweak model complexity (params)
+
+
+With regularization, learning curve flattens.
+
+### Beating Overfitting
+
 **Overfitting** occurs when there is a big gap between *true error* and *apparent error* - likely caused by a small training set hindering generalization of the model.
 **Learning curve** plots training set size against accuracy.
 
 Ways to beat overfitting:
 - Data augmentation 
-- Reduce the no. of features
-- Reduce complexity/flexibility of the model
+- *Reduce the no. of features*
+- *Reduce complexity/flexibility of the model*
 
 This is where **regularization** comes in: it discourages overly complex models (last 2 bullet points)!
 
-- *"Regularization are techniques to reduce the test error, possibly at the expense of increased training error"*
-- **Ridge (L2) = weight decay**: shrinks coefficients of less significant features towards 0
+*"Regularization are techniques to reduce the test error, possibly at the expense of increased training error"*
+
+
+### Parameter Norm Regularization
+
+Idea: *generalization bounds* is positively correlated with size of weights! Hence, we prefer smaller weights.s
+
+**Ridge (L2) = weight decay**: shrinks coefficients of less significant features towards 0
 
 $$\mathcal{L} = \mathcal{L}_0 + \frac{\lambda}{2}\sum_w w^2 $$
 
@@ -258,6 +278,13 @@ optimizer = optim.SGD(net.parameters(), lr=5e-1, weight_decay=3e-3)
 sparsity), performs feature selection during training NN
 
 ### Early Stopping (of Gradient Updating)
+
+This also relies on the idea that smaller norm weights are preferred.
+
+- **Weight space**: note there are flat areas (hardly any gradient) which may prevent model from learning
+    - For each step, the loss landscape can look completely different! Also between true and apparent error, you may see learning or nothing happening...
+    - VERY high dimensional and typically look terrible...
+    - **Learning rate / no. of epochs** are hyperparams that are important to tune! 
 
 - Useful when network is correctly initialized 
 - We stop training when discrepancy between validation and apparent error starts to increase: decreasing error on train set may make it seem like model is learning still, whereas validation set (unseen) error increasing...
@@ -281,11 +308,12 @@ else:
 - Noise added to output - label smoothing 
 
 ### Dropout
-= combination of weight decay and noise injection
+= combination of weight decay and noise injection or "forcefully set weights to 0"
 
 - Note that this modifies the *architecture*, rather than a simple modification to the optimization step.
 - Each training step: randomly select a fraction of the nodes and make then inactive (set to 0) 
-- Prevents NN to become overly reliant on specific neurons
+- Prevents NN to become overly reliant on specific neurons i.e. smaller risk of overfitting
+- You get different versions of network - all simultaneously trained
 
 In `forward(x)` we can apply dropout: 
 ```python
@@ -373,6 +401,8 @@ class SelfAttention(nn.Module):
 ```
 
 *Wide multi-head self-attention*: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions. NOTE this does not lead to increase in params!
+
+- Note that *Narrow multi-head self-attention* has less expressive power, since each head has reduced embedding dimension now.
 
 ```python
 class MultiHeadAttention(nn.Module):
@@ -483,7 +513,9 @@ Note it is tricky to generate samples here, due to the undefined range!
 
 ### Variational Auto-encoders (VAEs)
 
-- **Encoder**: generates *distributions*, instead of points!
+- **Encoder**: generates *distributions*, instead of points! Sampling is part of training now.
+    -  This new distribution is correct now i.e. we can throw away encoder and just use decoder to generate images 
+    - Decoder-only setup: just make up a random $h$ and generate $r$ directly
 - **Decoder**: chooses $z$ randomly from the learned distribution
     - Or: *reparameterization trick*:
 
@@ -559,4 +591,13 @@ See the full derivation here: https://stats.stackexchange.com/questions/318748/d
         return torch.sum(sigma**2 + mu**2 - torch.log(sigma) - 1/2)
 ```
 
+### Generative Adversarial Networks (GANs)
 
+- **Discriminator**: tries to discrminate between real and fake data points
+- **Generator**: learns to map points in the latent space to generated images - tries to fool the discriminator by generating real looking images
+
+The latent space has no meaning other than the meaning applied to it via the generative model. Yet, the latent space has structure that can be explored, such as by interpolating between points and performing vector arithmetic between points in latent space which have meaningful and targeted effects on the generated images.
+We can have 2 random noise vectors $z$ which can be morphed into each other through interpolation.
+
+- Goal: train until **discriminator** cannot tell difference between fake and real anymore i.e. learn decoder to generate these images
+    - At training time we know what is fake or real
