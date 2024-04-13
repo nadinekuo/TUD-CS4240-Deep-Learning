@@ -372,7 +372,7 @@ class SelfAttention(nn.Module):
     ...
 ```
 
-Wide multi-head self-attention: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions. NOTE this does not lead to increase in params!
+*Wide multi-head self-attention*: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions. NOTE this does not lead to increase in params!
 
 ```python
 class MultiHeadAttention(nn.Module):
