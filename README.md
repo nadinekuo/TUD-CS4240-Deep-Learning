@@ -432,6 +432,12 @@ Whereas supervised models learn the basis of examples, unsupervised learners mos
 - Trained on non-labelled data (i.e. no targets), so tasks such as classification or regression become difficult
 - Instead, unsupervised learners can be deployed as models that learn data-specific features, store large datasets efficiently or generate new realistic samples
 
+<br>
+
+![VAE and GAN explained](unsupervised.png)
+
+<br>
+
 ### The Auto-encoder
 
 Concatenation of two parts: $y = g(h(x))$
@@ -552,3 +558,5 @@ See the full derivation here: https://stats.stackexchange.com/questions/318748/d
     def kull_leib(self, mu, sigma):
         return torch.sum(sigma**2 + mu**2 - torch.log(sigma) - 1/2)
 ```
+
+
