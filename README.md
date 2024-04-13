@@ -320,10 +320,10 @@ To deal with vanishing/exploding gradients, the **GRU** and **LSTM** were invent
 ## Gated Recurrent Unit (GRU)
 
 - **Reset gate $R$**: possibly ignore previous hidden states $H_{t-1}$
-- **Update gate $Z$**: weigh between previous hidden state $H_{t-1}$ and current candidate state $\hat{H}_{t-1}$
+- **Update gate $Z$**: weigh between previous hidden state $H_{t-1}$ and current candidate state $\hat{H}_{t}$
 
 ```python
-# Below we concatenate the weight matrices W_xn, W_xr, W_xz
+# Below we concatenate the weight matrices W_xn, W_xr, W_xz since learning the reset gate, update gate and candidate state follow the same procedure (all rely on x_t and h_t-1)
 self.weight_xh = nn.Parameter(torch.Tensor(input_size, 3 * hidden_size)) 
 self.weight_hh = nn.Parameter(torch.Tensor(hidden_size, 3 * hidden_size))
 self.bias_xh = nn.Parameter(torch.Tensor(3 * hidden_size))
