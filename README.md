@@ -613,8 +613,10 @@ We can have 2 random noise vectors $z$ which can be morphed into each other thro
 ### Matrix Multiplications
 - `y = torch.mm(x, self.weight) + self.bias`
 - Directly adding bias: `y = torch.addmm(self.bias_xh, x[0], self.weight_xh)`
-- Operate on batches: `y = torch.bmm(...)`
+- Operate on batches: `w_prime = torch.bmm(queries, keys.transpose(1, 2)) / (k ** 0.5)`
 
 ### Tensor Manipulations
-- Flatten input: `x = x.view(x.shape[0], -1)`
+- Flatten input: `x = x.view(x.shape[0], -1)` 
+  - NOTE this does not work for non-contiguous tensors i.e. after having transposed
+- For non-contiguous tensors: `queries = queries.transpose(1, 2).reshape(b * h, t, k)`
 
