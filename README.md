@@ -1,5 +1,6 @@
 # TUD-CS4240-Deep-Learning
 
+
 ## 1 Activations and Backpropagation
 
 ### `Class Linear(in_features, out_features)`
@@ -601,3 +602,16 @@ We can have 2 random noise vectors $z$ which can be morphed into each other thro
 
 - Goal: train until **discriminator** cannot tell difference between fake and real anymore i.e. learn decoder to generate these images
     - At training time we know what is fake or real
+
+
+## Useful PyTorch Operations
+
+### Instantiating tensors
+- Default using FloatTensor: `self.weight_1 = torch.Tensor(in_feat, hidden_dims)`
+- From Python list: `x_xor = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float32)`
+
+### Matrix multiplations
+- `y = torch.mm(x, self.weight) + self.bias`
+- Directly adding bias: `y = torch.addmm(self.bias_xh, x[0], self.weight_xh)`
+- Operate on batches: `y = torch.bmm(...)`
+
