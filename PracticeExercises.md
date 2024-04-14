@@ -75,6 +75,41 @@ $$ \lambda_{ML} = \frac{1}{m} \sum_{j=1}^m{x_j} $$
 
 ## 3. Receptive Field in CNN
 
+Calculate the receptive field of a feature/pixel in the output of the architecture given by the table below.
+
+Note: the RF refers to the no. of pixels in the input image that a particular feature ("pixel") in the output of Conv4 is looking at i.e. the answer should be a single integer.
+
+See this awesome blogpost on RF arithmetic: https://medium.com/syncedreview/a-guide-to-receptive-field-arithmetic-for-convolutional-neural-networks-42f33d4378e0.
+
+| Layer | Kernel size | Stride |
+|----------|----------|----------|
+| Conv1   | 3    | 1    |
+| Pool1    | 2    | 2    |
+| Conv2    | 3    | 1    |
+| Pool2    | 2    | 2    |
+| Conv3    | 3    | 1    |
+| Conv4    | 3    | 1    |
+
+We use the following formulas:
+
+$$ j_{out} = j_{in} * s $$
+which refers to distance between two adjacent features.
+
+$$ r_{out} = r_{in} + (k-1) * j_{in} $$
+
+which is the RF of current layer.
+
+For the above net:
+- $r_0 = 1$ and $j_0 = 1$
+- $r_1 = 1 + (3 - 1) * 1 = 3$ and $j_1 = 1 * 1 = 1$
+- $r_2 = 3 + (2 - 1) *  1 = 4$ and $j_2 = 1 * 2 = 2$
+- $r_3 =$
+- $r_4 =$
+- $r_5 =$
+- $r_6 =$
+
+
+
 
 ## 4. Batch Normalization
 
