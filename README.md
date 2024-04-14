@@ -606,12 +606,15 @@ We can have 2 random noise vectors $z$ which can be morphed into each other thro
 
 ## Useful PyTorch Operations
 
-### Instantiating tensors
+### Instantiating Tensors
 - Default using FloatTensor: `self.weight_1 = torch.Tensor(in_feat, hidden_dims)`
 - From Python list: `x_xor = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float32)`
 
-### Matrix multiplations
+### Matrix Multiplications
 - `y = torch.mm(x, self.weight) + self.bias`
 - Directly adding bias: `y = torch.addmm(self.bias_xh, x[0], self.weight_xh)`
 - Operate on batches: `y = torch.bmm(...)`
+
+### Tensor Manipulations
+- Flatten input: `x = x.view(x.shape[0], -1)`
 
