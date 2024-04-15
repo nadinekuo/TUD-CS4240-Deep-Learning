@@ -111,8 +111,32 @@ For the above net:
 So total no. of pixels seen by 1 pixel in the feature map produced by Conv4 is $26^2 = 676$
 
 
-
 ## 4. Batch Normalization
+
+**What is batch normalization?**
+
+Batch normalization is a technique that addresses the problem of internal covariate shift, which refers to the change in the distribution of network activations during training.
+
+During training, batch normalization normalizes the activations of each mini-batch by subtracting the mini-batch mean and dividing by the mini-batch standard deviation. This helps to stabilize the distribution of inputs to each layer, making the network more robust and reducing the dependence on the initialization of the weights.
+
+The formulas for batch normalization are as follows:
+
+Calculate the mini-batch mean: $μ_i = \frac{1}{n}\sum_{j=1}^n{z_j}$
+
+Calculate the mini-batch variance: $σ^2_i = \frac{1}{n}\sum_{j=1}^n{(z_j - \mu_i)^2}$
+
+Normalize the mini-batch activations: $z_i^{norm} = \frac{z - \mu}{\sqrt{\sigma^2 + \delta}}$ - however this may be too rigid...
+
+Thus we add learnable parameters: $\hat{z_i^{norm}} = \gamma_iz_i^{norm} + \beta_i$
+
+Here, $γ$ and $β$ are learnable parameters that allow the network to learn the optimal scale and shift for each normalized value.
+NOTE: we can learn to undo the normalization as follows: take $\gamma_i = \sqrt{\sigma^2 + \delta}$ and $\beta_i = \mu$
+
+
+**How is it applied during test time (i.e. batch size = 1)?**
+
+During test time, when the batch size is 1, the mean and variance used for normalization are typically estimated using the weighted average of the mini-batch statistics computed during training (EWMA). This ensures that the network behaves consistently during both training and inference.
+
 
 
 ## 5. Regularization
