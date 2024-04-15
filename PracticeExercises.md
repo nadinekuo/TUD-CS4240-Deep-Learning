@@ -93,7 +93,7 @@ See this awesome blogpost on RF arithmetic: https://medium.com/syncedreview/a-gu
 We use the following formulas:
 
 $$ j_{out} = j_{in} * s $$
-which refers to distance between two adjacent features.
+which refers to distance between two adjacent features (i.e. cumulative stride).
 
 $$ r_{out} = r_{in} + (k-1) * j_{in} $$
 
@@ -103,11 +103,12 @@ For the above net:
 - $r_0 = 1$ and $j_0 = 1$
 - $r_1 = 1 + (3 - 1) * 1 = 3$ and $j_1 = 1 * 1 = 1$
 - $r_2 = 3 + (2 - 1) *  1 = 4$ and $j_2 = 1 * 2 = 2$
-- $r_3 =$
-- $r_4 =$
-- $r_5 =$
-- $r_6 =$
+- $r_3 = 4 + (3 - 1) * 2 = 8$ and $j_3 = 2 * 1 = 2$
+- $r_4 = 8 + (2 - 1) * 2 = 10$ and $j_4 = 2 * 2 = 4$
+- $r_5 = 10 + (3 - 1) * 4 = 18$ and $j_5 = 4 * 1 = 4$
+- $r_6 = 18 + (3 - 1) * 4 = 26$ and $j_6 = 4 * 1 = 4$
 
+So total no. of pixels seen by 1 pixel in the feature map produced by Conv4 is $26^2 = 676$
 
 
 
