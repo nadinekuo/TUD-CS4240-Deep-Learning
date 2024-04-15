@@ -141,14 +141,95 @@ During test time, when the batch size is 1, the mean and variance used for norma
 
 ## 5. Regularization
 
+**Draw the learning curve for overfitting**
+
+![alt text](learning_curve.png)
+
+**Name and explain one type of parameter norm regularization (include its equation).**
+
+Ridge (L2) = weight decay: shrinks coefficients of less significant features towards 0
+
+$$\mathcal{L} = \mathcal{L}_0 + \frac{\lambda}{2}\sum_w w^2 $$
+
+In the training loop, we can update the original loss e.g. *CrossEntropyLoss*:
+```python
+l2 = 0
+for p in net.parameters():        # Loop through the network parameters
+    l2 += torch.pow(p, 2).sum() 
+loss = loss + 0.5 * wd * l2
+```
+Instead, we can also directly use the PyTorch weight decay parameter when instantiating optimizer:
+
+```python
+optimizer = optim.SGD(net.parameters(), lr=5e-1, weight_decay=3e-3)
+```
+
+**How is dropout performed? Explain both training and evaluation.**
+
+Training time:
+- Each training step: randomly select a fraction of the nodes - rescale other weights with the fraction and make then inactive (set to 0)
+- Backpropagate on the rest of the network (i.e. what is left)
+- Prevents NN to become overly reliant on specific neurons i.e. smaller risk of overfitting
+- You get different versions of network - all simultaneously trained
+
+In `forward(x)` we can apply dropout: 
+```python
+h = F.relu(self.fc1(x))  
+h = self.do1(h + F.relu(self.fc2(h)))
+h = h + F.relu(self.fc3(h))
+h = self.do2(h + F.relu(self.fc4(h)))
+h = h + F.relu(self.fc5(h))
+```
+
+Evaluation time:
+- Simulate few networks with dropped out nodes, average the outcomes
+- We do not drop neurons but rescale weights: $w_{new} = w_{original} * p_{dropout}$
 
 
 ## 6. LTSMs
 
+**Explain the working of LSTM using equations.**
+
+Forget gate and input gates are similar to the *update gate* in GRUs - these allow us to weigh how much an already updated hidden state (or candidate $\tilde{C_t}$) can update the previous hidden state $H_{t-1}$.
+
+$$I_t = \sigma(X_tW_{xi} + H_{t-1}W_{hi} + b_i)$$
+
+$$F_t = \sigma(X_tW_{xf} + H_{t-1}W_{hf} + b_f)$$
+
+Candidate cell gate:
+$$\tilde{C_t} = tanh(X_tW_{xc} + H_{t-1}W_{hc} + b_c) $$
+
+Current cell gate: computed by using the forget- and input gates
+$$C_t = F_t \odot C_{t-1} + I_t \odot \tilde{C_t}$$
+
+Current hidden state: computed using the output gate
+$$ h_t = O_t \odot tanh(C_t)$$
 
 
 ## 7. Self-Attention
 
+**Why do we need to explicitly include positional information in self-attention?**
 
+Sel-attention is inherently permutation invariant, meaning that changing the input sequence order will still lead to the same results. This is not always desired however, so we add position information to the input vectors. 
+
+**What is the difference between positional embeddings and encodings?**
+
+### Learned position embedding
+Embed the positions, like word embeddings $x_{cat}, x_{Susan}, ...$ learn $x_{12}, x_{25}...$ and sum with word embedding vectors
+
+![alt text](pos-embedding.png)
+
+### Position encoding
+Construct a *fixed* function $f: \N \rightarrow \R^d$ and let the network learn with it
+
+This was used originally in "Attention Is All You Need":
+
+![alt text](pos-encoding.png)
+
+In summary the [key difference](https://stats.stackexchange.com/questions/470804/what-is-the-difference-between-position-embedding-vs-positional-encoding-in-bert) is:
+
+The positional encoding is a static function that maps an integer inputs to real-valued vectors in a way that captures the inherent relationships among the positions. That is, it captures the fact that position 4 in an input is more closely related to position 5 than it is to position 17.
+
+While for the position embedding there will be plenty of training examples for the initial positions in our inputs and correspondingly fewer at the outer length limits. These latter embeddings may be poorly trained and may not generalize well during testing.
 
 ## 8. Contractive Auto-encoder

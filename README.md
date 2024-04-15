@@ -312,7 +312,10 @@ else:
 = combination of weight decay and noise injection or "forcefully set weights to 0"
 
 - Note that this modifies the *architecture*, rather than a simple modification to the optimization step.
-- Each training step: randomly select a fraction of the nodes and make then inactive (set to 0) 
+  
+Training time:
+- Each training step: randomly select a fraction of the nodes - rescale other weights with the fraction and make then inactive (set to 0)
+- Backpropagate on the rest of the network
 - Prevents NN to become overly reliant on specific neurons i.e. smaller risk of overfitting
 - You get different versions of network - all simultaneously trained
 
@@ -325,7 +328,9 @@ h = self.do2(h + F.relu(self.fc4(h)))
 h = h + F.relu(self.fc5(h))
 ```
 
-Note that during evaluation, we do not drop neurons but rescale weights: $w_{new} = w_{original} * p_{dropout}$
+Evaluation time:
+- Simulate few networks with dropped out nodes, average the outcomes
+- We do not drop neurons but rescale weights: $w_{new} = w_{original} * p_{dropout}$
 
 
 ## 3.2 RNNs
