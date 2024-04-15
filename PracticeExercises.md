@@ -233,3 +233,17 @@ The positional encoding is a static function that maps an integer inputs to real
 While for the position embedding there will be plenty of training examples for the initial positions in our inputs and correspondingly fewer at the outer length limits. These latter embeddings may be poorly trained and may not generalize well during testing.
 
 ## 8. Contractive Auto-encoder
+
+**What is an auto-encoder and what is it used for?**
+
+A feed-forward network to reproduce its input and the output layer: $g(f(x)) = x$.
+It concatenates an encoder $f(x)$ and decoder $g(x)$.
+This can be used in unsupervised image generation for instance.
+
+
+**A contractive auto-encoder is given by the equation below - explain it and its goal**
+
+$$ l(g(f(x)), x) + \lambda \lVert \frac{\partial f(x)}{\partial x} \rVert^2_F $$
+
+We append a regularization term to the loss to penalize "unwanted variations" such as simplying copying the input.
+The part right to $\lambda$ is the Frobenius norm of the Jabobian (matrix of partial derivatives) which measures how much $h = f(x)$ changes when $x$ changes. We want to minimize this norm, as it implies the model is robust.
