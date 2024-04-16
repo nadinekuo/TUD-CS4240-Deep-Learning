@@ -233,8 +233,9 @@ Some Gradient Descent Update algorithms that make use of EWMA:
     - For Bayes error (= irreducable error), you need inf no. of samples in order to see any learning.
     - Note: the curve can never be lower than Bayes error
 - **"Appropriate" no. of training samples** = not perfect error rate, but at least similar to what you would expect on validation set
-- **Underfitting** = potential to improve, but we don't see it directly in the learning curve until we tweak model complexity (params)
-
+- **Underfitting** = model is too simple to capture the underlying structure of the data, resulting in poor performance on both the training and unseen data.
+  - Potential to improve, but we don't see it directly in the learning curve until we tweak model complexity (params)
+- **Overfitting** = model learns the training data too well, capturing noise or random fluctuations, leading to poor generalization to unseen data.
 
 With regularization, learning curve flattens.
 
@@ -406,6 +407,8 @@ class SelfAttention(nn.Module):
     ...
 ```
 
+Having multiple attention heads in a transformer model allows it to focus on different parts of the input sequence simultaneously, capturing diverse aspects of context and improving its ability to represent relationships and dependencies within the data.
+
 *Wide multi-head self-attention*: i.e. each of the $h$ heads is applied independently, after which we project back to original dimensions. NOTE this does not lead to increase in params!
 
 - Note that *Narrow multi-head self-attention* has less expressive power, since each head has reduced embedding dimension now.
@@ -483,6 +486,8 @@ Concatenation of two parts: $y = g(h(x))$
     - Used for generating new data: $x_{new} = h(z_{sample})$ 
 
 Using $L(x, y)$ (i.e. MSE) we can learn how to encode the input signals and decode it back.
+
+![alt text](autoencoder.png)
 
 ```python
 class Encoder(nn.Module):
