@@ -625,3 +625,6 @@ We can have 2 random noise vectors $z$ which can be morphed into each other thro
   - NOTE this does not work for non-contiguous tensors i.e. after having transposed
 - For non-contiguous tensors: `queries = queries.transpose(1, 2).reshape(b * h, t, k)`
 
+### Activation Functions
+
+- Note that `torch.nn.functional.relu()` is the in-place version of `torch.nn.ReLU()`
