@@ -536,6 +536,8 @@ $$
 
 in which $\zeta$ is randomly sampled from $\mathcal{N} (0, I)$.  Backpropagation is perfectly possible again!
 
+Backpropagation relies on computing gradients of deterministic (i.e., non-random) operations. Therefore, we need a method that introduces the necessary randomness for sampling while preserving the differentiability of the operations involved. This is where the reparameterization trick comes in.
+
 This yields a latent space that is:
 - *Continuous*: two points close in latent space yield similar reproductions
 - *Complete*: all points in the latent space, at least close enough to the origin, yield meaningful reproductions
